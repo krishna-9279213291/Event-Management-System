@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            display: flex;
+            height: 100vh;
+            background: #050816;
+            color: #f5f5f5;
+        }
+        .sidebar {
+            width: 230px;
+            background: linear-gradient(180deg, #1f2937, #0b1120);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(148, 163, 184, 0.4);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 20% 20%, #f97316, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .tagline {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .nav {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav a {
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #e5e7eb;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .nav a span {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .nav a.active,
+        .nav a:hover {
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.25), rgba(129, 140, 248, 0.35));
+            transform: translateX(2px);
+        }
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 11px;
+            color: #6b7280;
+            border-top: 1px solid rgba(55, 65, 81, 0.8);
+            padding-top: 10px;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 22px;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.16), transparent 55%),
+                        #020617;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .top-left h1 {
+            font-size: 22px;
+        }
+        .top-left p {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 999px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .search input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e5e7eb;
+            font-size: 12px;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(55, 65, 81, 0.7);
+            font-size: 12px;
+        }
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 20% 20%, #a855f7, #22c55e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2.1fr 1.4fr;
+            gap: 18px;
+            height: calc(100vh - 80px);
+        }
+        .card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            padding: 15px 16px;
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .card-header h3 {
+            font-size: 15px;
+        }
+        .card-header span {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .chip {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            color: #e5e7eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-box {
+            padding: 10px;
+            border-radius: 14px;
+            background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.05), transparent 60%);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .stat-value {
+            margin-top: 4px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .stat-meta {
+            margin-top: 3px;
+            font-size: 10px;
+            color: #6ee7b7;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .events-table thead {
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .events-table th,
+        .events-table td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+        }
+        .events-table th {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        .status-pill {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            display: inline-block;
+        }
+        .status-live {
+            background: rgba(34, 197, 94, 0.15);
+            color: #6ee7b7;
+        }
+        .status-upcoming {
+            background: rgba(59, 130, 246, 0.18);
+            color: #bfdbfe;
+        }
+        .status-draft {
+            background: rgba(148, 163, 184, 0.2);
+            color: #e5e7eb;
+        }
+
+        .btn-primary {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            background: linear-gradient(90deg, #f97316, #e11d48);
+            color: #0b1120;
+        }
+
+        .timeline {
+            margin-top: 6px;
+            max-height: 210px;
+            overflow-y: auto;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(31, 41, 55, 0.9);
+        }
+        .timeline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            background: linear-gradient(135deg, #f97316, #a855f7);
+        }
+        .timeline-content {
+            font-size: 11px;
+        }
+        .timeline-content span {
+            display: block;
+            color: #9ca3af;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .small-list {
+            margin-top: 6px;
+            font-size: 11px;
+        }
+        .small-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(31, 41, 55, 0.9);
+        }
+        .badge {
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.15);
+            color: #bfdbfe;
+            font-size: 10px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.9);
+            border-radius: 999px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                border-right: none;
+                border-bottom: 1px solid rgba(55, 65, 81, 0.7);
+            }
+            .nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .sidebar-footer {
+                display: none;
+            }
+            .main {
+                height: calc(100vh - 80px);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">EV</div>
+            <div>
+                <div class="logo-text">EventVista</div>
+                <div class="tagline">Plan • Host • Celebrate</div>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="#" class="active">Dashboard <span>Overview</span></a>
+            <a href="#">Events <span>Manage</span></a>
+            <a href="#">Attendees <span>Lists</span></a>
+            <a href="#">Tickets <span>Sales</span></a>
+            <a href="#">Messages <span>Inbox</span></a>
+            <a href="#">Settings <span>Account</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            Logged in as<br />
+            <strong>Organizer</strong>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="top-left">
+                <h1>Welcome back, Krishna 👋</h1>
+                <p>Track your live events, ticket sales, and attendee engagement in one place.</p>
+            </div>
+            <div class="top-right">
+                <div class="search">
+                    🔍
+                    <input type="text" placeholder="Search events, attendees..." />
+                </div>
+                <button class="btn-primary">+ Create Event</button>
+                <div class="profile">
+                    <div class="avatar">K</div>
+                    <div>
+                        <div style="font-size: 11px;">Krishna</div>
+                        <div style="font-size: 10px; color:#9ca3af;">Organizer</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="grid">
+            <!-- Left main section -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Event Snapshot</h3>
+                            <span>Today at a glance</span>
+                        </div>
+                        <span class="chip">Last 7 days</span>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-label">Live Events</div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-meta">+1 vs yesterday</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Tickets Sold</div>
+                            <div class="stat-value">428</div>
+                            <div class="stat-meta">₹1,52,300 revenue</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Check-ins</div>
+                            <div class="stat-value">289</div>
+                            <div class="stat-meta">67% of total capacity</div>
+                        </div>
+                    </div>
+
+                    <div class="card-header" style="margin-top: 4px;">
+                        <div>
+                            <h3>Upcoming & Live Events</h3>
+                            <span>Manage registrations and status</span>
+                        </div>
+                        <button class="btn-primary">View All</button>
+                    </div>
+                    <table class="events-table">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Tickets</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tech Innovators Summit 2025</td>
+                                <td>24 Nov, 2025</td>
+                                <td>City Convention Hall</td>
+                                <td>180 / 220</td>
+                                <td><span class="status-pill status-live">Live now</span></td>
+                            </tr>
+                            <tr>
+                                <td>Startup Pitch Night</td>
+                                <td>28 Nov, 2025</td>
+                                <td>Orbit Co-working Space</td>
+                                <td>96 / 120</td>
+                                <td><span class="status-pill status-upcoming">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>Music Fiesta: Winter Edition</td>
+                                <td>02 Dec, 2025</td>
+                                <td>Riverfront Arena</td>
+                                <td>350 / 500</td>
+                                <td><span class="status-pill status-upcoming">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>College Fest - TechX</td>
+                                <td>15 Dec, 2025</td>
+                                <td>Infotech Campus</td>
+                                <td>120 / 300</td>
+                                <td><span class="status-pill status-draft">Draft</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right side widgets -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Live Activity</h3>
+                            <span>Real-time updates</span>
+                        </div>
+                        <span class="chip">Auto-refresh</span>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                2 new tickets sold for <strong>Tech Innovators Summit</strong>.
+                                <span>Just now</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                Check-in completed: <strong>Ananya Sharma</strong>.
+                                <span>3 min ago</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                New message received for <strong>Startup Pitch Night</strong>.
+                                <span>9 min ago</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                Refund processed for <strong>Music Fiesta</strong> (1 ticket).
+                                <span>21 min ago</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                New attendee added from bulk import.
+                                <span>39 min ago</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                Event <strong>College Fest - TechX</strong> moved to Draft.
+                                <span>1 hr ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Top Performing Events</h3>
+                            <span>Based on ticket sales</span>
+                        </div>
+                    </div>
+                    <div class="small-list">
+                        <div class="small-row">
+                            <div>
+                                Tech Innovators Summit 2025
+                                <span style="display:block; font-size:10px; color:#9ca3af;">Conversion: 78%</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; text-align:right;">₹82,500</div>
+                                <div class="badge">180 tickets</div>
+                            </div>
+                        </div>
+                        <div class="small-row">
+                            <div>
+                                Music Fiesta: Winter Edition
+                                <span style="display:block; font-size:10px; color:#9ca3af;">Conversion: 64%</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; text-align:right;">₹55,000</div>
+                                <div class="badge">140 tickets</div>
+                            </div>
+                        </div>
+                        <div class="small-row">
+                            <div>
+                                Startup Pitch Night
+                                <span style="display:block; font-size:10px; color:#9ca3af;">Conversion: 71%</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; text-align:right;">₹14,800</div>
+                                <div class="badge">96 tickets</div>
+                            </div>
+                        </div>
+                        <div class="small-row">
+                            <div>
+                                Community Hackathon
+                                <span style="display:block; font-size:10px; color:#9ca3af;">Conversion: 59%</span>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; text-align:right;">₹21,300</div>
+                                <div class="badge">110 tickets</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Quick Actions</h3>
+                            <span>Most used tools</span>
+                        </div>
+                    </div>
+                    <div class="small-list">
+                        <div class="small-row">
+                            <span>Create a new event</span>
+                            <button class="btn-primary">Start</button>
+                        </div>
+                        <div class="small-row">
+                            <span>Send announcement to attendees</span>
+                            <button class="btn-primary">Broadcast</button>
+                        </div>
+                        <div class="small-row">
+                            <span>Download ticket sales report</span>
+                            <button class="btn-primary">Download</button>
+                        </div>
+                        <div class="small-row">
+                            <span>Manage organizer team</span>
+                            <button class="btn-primary">Open</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
