@@ -1,0 +1,11 @@
+1. User opens website →
+2. Registers or logs in →
+3. Role check:
+   - If Admin → Redirect to Admin Dashboard
+   - If Organizer → Organizer Dashboard
+   - If User → User Dashboard
+4. Organizer creates event →
+5. Admin approves event →
+6. Users view events and register →
+7. After event → Users give feedback →
+8. Admin views reports.
