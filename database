@@ -1,0 +1,7 @@
+CREATE TABLE payments (
+  payment_id VARCHAR(100),
+  order_id VARCHAR(100),
+  amount INT,
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
